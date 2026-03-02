@@ -4,7 +4,6 @@ import os
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
 import torch
-from transform import transform
 from tqdm import tqdm
 from torch import nn, optim
 from model import VariationalAutoEncoder
