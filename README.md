@@ -95,3 +95,13 @@ generate(model, num_samples=16, save_path="generated.png")
 # Or load from saved weights and generate
 generate(num_samples=16, save_path="generated.png")
 ```
+
+### Compare weights
+
+Check with the compare.py script if two PyTorch model weights files are the same:
+
+```bash
+python compare.py
+```
+
+Example weights of training the model with the default values are provided in the root of the repository under `vae_mnist.pth`.
