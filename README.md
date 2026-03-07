@@ -96,6 +96,10 @@ generate(model, num_samples=16, save_path="generated.png")
 generate(num_samples=16, save_path="generated.png")
 ```
 
+An output could look like the following example:
+
+![Example of generated handwritten numbers. ](./generated.png)
+
 ### Compare weights
 
 Check with the compare.py script if two PyTorch model weights files are the same:
