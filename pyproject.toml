@@ -11,6 +11,9 @@ dependencies = [
     "tqdm>=4.67.3",
 ]
 
+[project.scripts]
+load-dataset = "scripts.load_npz_dataset:cli"
+
 [tool.uv.sources]
 torch = [
   { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
