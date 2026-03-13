@@ -1,8 +1,5 @@
 import os
-
-# CRITICAL: Set this BEFORE importing torch or doing any CUDA operations
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-
 import torch
 from tqdm import tqdm
 from torch import nn, optim
@@ -10,18 +7,11 @@ from model import VariationalAutoEncoder
 from torchvision import transforms
 from torchvision.utils import save_image
 from torch.utils.data import DataLoader
+from utils.device import get_device
+from utils.determinism import setup_determinism
+from inference import generate
 
 import torchvision.datasets as datasets
-
-
-def setup_determinism(seed=42):
-    """Sets up a fully deterministic environment."""
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
-    torch.use_deterministic_algorithms(True)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
 
 
 def train(
@@ -54,7 +44,7 @@ def train(
     print("Determinism setup complete!")
 
     if device is None:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = get_device()
 
     train_dataset = datasets.MNIST(
         root="dataset/", train=True, transform=transforms.ToTensor(), download=True
@@ -104,41 +94,6 @@ def train(
     print(f"Test loss: {test_loss:.4f}")
 
     return model
-
-
-def generate(
-    model=None,
-    num_samples=16,
-    z_dim=20,
-    save_path="generated.png",
-    device=None
-):
-    """
-    Generate new images using a trained VAE.
-    
-    Args:
-        model: Trained VAE model (if None, loads from vae_mnist.pth)
-        num_samples: Number of samples to generate (default: 16)
-        z_dim: Latent dimension used during training (default: 20)
-        save_path: Path to save generated images (default: generated.png)
-        device: Device to run on (default: cuda if available)
-    """
-    if device is None:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    if model is None:
-        model = VariationalAutoEncoder(input_dimension=784, hidden_dimension=200, z_dimension=z_dim)
-        model.load_state_dict(torch.load("vae_mnist.pth"))
-        model.to(device)
-        print("Loaded model from vae_mnist.pth")
-
-    model.eval()
-    with torch.no_grad():
-        z = torch.randn(num_samples, z_dim).to(device)
-        samples = model.decode(z)
-        samples = samples.view(-1, 1, 28, 28)
-        save_image(samples, save_path)
-        print(f"Generated {num_samples} images saved to {save_path}")
 
 
 if __name__ == "__main__":

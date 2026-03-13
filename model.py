@@ -1,24 +1,5 @@
-import os
-
-# CRITICAL: Set this BEFORE importing torch or doing any CUDA operations
-os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-
 import torch
 from torch import nn
-
-
-def setup_determinism(seed=42):
-    """Sets up a fully deterministic environment."""
-    # Set seeds for all libraries
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
-    torch.use_deterministic_algorithms(True)
-    # Disable cuDNN's non-deterministic algorithms
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-setup_determinism()
-print("Determinism setup complete! ")
 
 class VariationalAutoEncoder(nn.Module):
     def __init__(self, input_dimension, hidden_dimension=200, z_dimension=20):
