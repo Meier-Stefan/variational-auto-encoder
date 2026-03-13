@@ -16,6 +16,7 @@ from tqdm import tqdm
 
 from .model import VariationalAutoEncoder, vae_loss
 from .utils import resolve_device, setup_determinism, ModelConfig
+from .data_tools.load_npz_dataset import load_npz_dataset
 
 
 class TrainConfig(Protocol):
@@ -28,21 +29,26 @@ class TrainConfig(Protocol):
     device: str
     data_dir: str
     output_path: str
+    npz_path: str | None
 
 
-def create_dataloaders(data_dir: str, batch_size: int = 32) -> tuple[DataLoader, DataLoader]:
-    train_dataset = datasets.MNIST(
-        root=data_dir,
-        train=True,
-        transform=transforms.ToTensor(),
-        download=True,
-    )
-    test_dataset = datasets.MNIST(
-        root=data_dir,
-        train=False,
-        transform=transforms.ToTensor(),
-        download=True,
-    )
+def create_dataloaders(data_dir: str, batch_size: int = 32, npz_path: str | None = None) -> tuple[DataLoader, DataLoader]:
+    if npz_path is not None:
+        train_dataset = load_npz_dataset(npz_path, train=True)
+        test_dataset = load_npz_dataset(npz_path, train=False)
+    else:
+        train_dataset = datasets.MNIST(
+            root=data_dir,
+            train=True,
+            transform=transforms.ToTensor(),
+            download=True,
+        )
+        test_dataset = datasets.MNIST(
+            root=data_dir,
+            train=False,
+            transform=transforms.ToTensor(),
+            download=True,
+        )
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
@@ -117,7 +123,8 @@ def train_loop(cfg: TrainConfig) -> VariationalAutoEncoder:
 
     device = resolve_device(cfg.device)
 
-    train_loader, test_loader = create_dataloaders(cfg.data_dir, cfg.batch_size)
+    npz_path = getattr(cfg, "npz_path", None)
+    train_loader, test_loader = create_dataloaders(cfg.data_dir, cfg.batch_size, npz_path)
     model = create_model(cfg.input_dim, cfg.hidden_dim, cfg.z_dim, device)
     optimizer = optim.Adam(model.parameters(), lr=cfg.lr)
 

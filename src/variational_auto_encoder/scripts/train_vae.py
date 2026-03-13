@@ -18,6 +18,7 @@ class SimpleConfig:
     device: str
     data_dir: str
     output_path: str
+    npz_path: str | None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -52,6 +53,11 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help='Device to train on (e.g. "auto", "cpu", "cuda", "cuda:0", "mps")',
     )
+    parser.add_argument(
+        "--npz-path",
+        default=None,
+        help="Path to npz dataset file (if not provided, downloads MNIST)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -65,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
         device=args.device,
         data_dir=args.data_dir,
         output_path=args.output_path,
+        npz_path=args.npz_path,
     )
 
     train_loop(cfg)
