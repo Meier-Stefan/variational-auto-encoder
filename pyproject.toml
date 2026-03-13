@@ -12,7 +12,10 @@ dependencies = [
 ]
 
 [project.scripts]
-load-dataset = "scripts.load_npz_dataset:cli"
+load-dataset = "variational_auto_encoder.scripts.load_npz_dataset:cli"
+vae-train = "variational_auto_encoder.scripts.train_vae:cli"
+vae-generate = "variational_auto_encoder.scripts.generate:cli"
+vae-evaluate = "variational_auto_encoder.scripts.evaluate:cli"
 
 [tool.uv.sources]
 torch = [

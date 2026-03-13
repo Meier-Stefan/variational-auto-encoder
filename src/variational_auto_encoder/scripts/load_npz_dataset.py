@@ -1,11 +1,9 @@
 """CLI script for loading and inspecting numpy dataset files."""
 
-from __future__ import annotations
-
 import argparse
 from pathlib import Path
 
-from data_tools.load_npz_dataset import load_npz_dataset
+from variational_auto_encoder.data_tools.load_npz_dataset import load_npz_dataset
 
 
 def main(npz_path: Path | str, train: bool = True) -> None:
