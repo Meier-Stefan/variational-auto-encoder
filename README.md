@@ -54,7 +54,7 @@ If you're running on a local Linux machine with an NVIDIA GPU:
 Train the model with default settings (MNIST, 10 epochs):
 
 ```bash
-python train.py
+vae-train
 ```
 
 This will:
@@ -62,37 +62,47 @@ This will:
 - Evaluate on MNIST test set
 - Save the model to `vae_mnist.pth`
 - Print the test loss to the console
-- Generate sample images to `generated.png`
 
-### Custom Training
+### Custom Training via CLI
 
-You can customize training parameters:
+```bash
+vae-train --epochs 20 --batch-size 64 --lr 1e-4 --z-dim 50 --output-path my_model.pth
+```
+
+### Custom Training via Python
 
 ```python
-from train import train
+from variational_auto_encoder import train_loop
 
-model = train(
-    input_dim=784,      # 28x28 = 784
-    hidden_dim=200,
-    z_dim=20,
-    epochs=10,
-    batch_size=32,
-    lr=3e-4,
-    save_path="vae_mnist.pth"
-)
+class TrainConfig:
+    batch_size: int = 32
+    epochs: int = 10
+    lr: float = 3e-4
+    input_dim: int = 784  # 28x28 = 784
+    hidden_dim: int = 200
+    z_dim: int = 20
+    device: str = "auto"
+    data_dir: str = "dataset/"
+    output_path: str = "vae_mnist.pth"
+
+config = TrainConfig()
+model = train_loop(config)
 ```
 
 ### Generating Images
 
 Generate new images using a trained model:
 
+```bash
+vae-generate --num-samples 16 --save-path generated.png
+```
+
+Or via Python:
+
 ```python
-from train import generate
+from variational_auto_encoder import generate
 
 # Generate from a trained model
-generate(model, num_samples=16, save_path="generated.png")
-
-# Or load from saved weights and generate
 generate(num_samples=16, save_path="generated.png")
 ```
 
@@ -100,15 +110,13 @@ An output could look like the following example:
 
 ![Example of generated handwritten numbers. ](./generated.png)
 
-### Compare weights
+### Evaluating a Trained Model
 
-Check with the compare.py script if two PyTorch model weights files are the same:
+Evaluate a trained model on the MNIST test set:
 
 ```bash
-python compare.py
+vae-evaluate --checkpoint-path vae_mnist.pth
 ```
-
-Example weights of training the model with the default values are provided in the root of the repository under `vae_mnist.pth`.
 
 ### Load Datasets
 
