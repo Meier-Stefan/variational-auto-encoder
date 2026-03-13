@@ -109,3 +109,14 @@ python compare.py
 ```
 
 Example weights of training the model with the default values are provided in the root of the repository under `vae_mnist.pth`.
+
+### Load Datasets
+
+Load and inspect numpy datasets (.npz format):
+
+```bash
+load-dataset path/to/dataset.npz --train    # Load training split (default)
+load-dataset path/to/dataset.npz --test     # Load test split
+```
+
+This CLI is installed via `pyproject.toml` and requires `uv sync` to register.
